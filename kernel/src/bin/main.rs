@@ -59,11 +59,16 @@ fn main() -> ! {
         .with_auth_method(AuthMethod::Wpa3Personal)
         .with_password("P2K67".to_string());
 
-    _wifi_controller.set_config(&ModeConfig::AccessPoint(access_point_config));
+    _wifi_controller
+        .set_config(&ModeConfig::AccessPoint(access_point_config))
+        .unwrap();
 
     _wifi_controller
         .set_mode(esp_radio::wifi::WifiMode::Ap)
         .unwrap();
+
+    _wifi_controller.start();
+    info!("{}", _wifi_controller.is_started().unwrap());
 
     loop {
         let stats: HeapStats = esp_alloc::HEAP.stats();

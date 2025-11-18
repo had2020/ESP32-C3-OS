@@ -35,7 +35,7 @@ esp-backtrace = { version = "0.18.1", features = [
 ] }
 esp-println = { version = "0.16.1", features = ["esp32c3", "log-04"] }
 esp-radio = { version = "0.17.0", features = [
-  "ble",
+  #"ble",
   "coex",
   "esp-alloc",
   "esp32c3",

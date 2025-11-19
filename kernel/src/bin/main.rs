@@ -14,6 +14,7 @@ use esp_alloc::HeapStats;
 use esp_backtrace as _;
 use esp_hal::clock::CpuClock;
 use esp_hal::main;
+use esp_hal::riscv::register::mcycle::write;
 use esp_hal::rtc_cntl::sleep;
 use esp_hal::time::{Duration, Instant};
 use esp_hal::timer::timg::TimerGroup;
@@ -21,6 +22,7 @@ use esp_radio::wifi::event::ApStaConnected;
 use esp_radio::wifi::{AccessPointConfig, AuthMethod, ModeConfig, WifiMode};
 //use esp_radio::ble::controller::BleConnector;
 use crate::alloc::string::ToString;
+use core::ptr;
 use esp_radio::wifi::WifiEvent::ApStaConnected as OtherApStaConnected;
 use log::info;
 
@@ -80,6 +82,13 @@ fn main() -> ! {
 
     // HAD2020 Protcal
     // command_type: u8, arg: u8
+
+    let addr: *mut u8 = &mut 0x4037_C001 as *mut _ as *mut u8;
+    unsafe {
+        ptr::write(addr, 21);
+    }
+    let value = unsafe { ptr::read_volatile(addr) };
+    info!("value: {}", value);
 
     loop {
         /*

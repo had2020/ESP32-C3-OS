@@ -16,9 +16,11 @@ use esp_hal::clock::CpuClock;
 use esp_hal::main;
 use esp_hal::time::{Duration, Instant};
 use esp_hal::timer::timg::TimerGroup;
+use esp_radio::wifi::event::ApStaConnected;
 use esp_radio::wifi::{AccessPointConfig, AuthMethod, ModeConfig, WifiMode};
 //use esp_radio::ble::controller::BleConnector;
 use crate::alloc::string::ToString;
+use esp_radio::wifi::WifiEvent::ApStaConnected;
 use log::info;
 
 extern crate alloc;
@@ -73,7 +75,12 @@ fn main() -> ! {
         _wifi_controller.is_started().unwrap()
     );
 
+    // HAD2020 Protcal
+    // opcode: u8, arg: u8
+
     loop {
+        _wifi_controller.wait_for_event(ApStaConnected);
+
         let stats: HeapStats = esp_alloc::HEAP.stats();
         info!("Memory: {}", stats);
         let delay_start = Instant::now();

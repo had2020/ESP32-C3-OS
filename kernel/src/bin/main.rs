@@ -14,13 +14,14 @@ use esp_alloc::HeapStats;
 use esp_backtrace as _;
 use esp_hal::clock::CpuClock;
 use esp_hal::main;
+use esp_hal::rtc_cntl::sleep;
 use esp_hal::time::{Duration, Instant};
 use esp_hal::timer::timg::TimerGroup;
 use esp_radio::wifi::event::ApStaConnected;
 use esp_radio::wifi::{AccessPointConfig, AuthMethod, ModeConfig, WifiMode};
 //use esp_radio::ble::controller::BleConnector;
 use crate::alloc::string::ToString;
-use esp_radio::wifi::WifiEvent::ApStaConnected;
+use esp_radio::wifi::WifiEvent::ApStaConnected as OtherApStaConnected;
 use log::info;
 
 extern crate alloc;
@@ -70,19 +71,23 @@ fn main() -> ! {
         .unwrap();
 
     let _ = _wifi_controller.start().unwrap();
+    /*
     info!(
         "Acess Point Online: {}",
         _wifi_controller.is_started().unwrap()
     );
+    */
 
     // HAD2020 Protcal
-    // opcode: u8, arg: u8
+    // command_type: u8, arg: u8
 
     loop {
-        _wifi_controller.wait_for_event(ApStaConnected);
-
+        /*
+        _wifi_controller.wait_for_event(OtherApStaConnected);
         let stats: HeapStats = esp_alloc::HEAP.stats();
         info!("Memory: {}", stats);
+        */
+
         let delay_start = Instant::now();
         while delay_start.elapsed() < Duration::from_secs(10) {}
     }

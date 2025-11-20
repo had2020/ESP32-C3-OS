@@ -6,6 +6,7 @@
     holding buffers for the duration of a data transfer."
 )]
 
+use core::mem::MaybeUninit;
 use core::u16;
 
 use alloc::fmt::format;
@@ -40,9 +41,8 @@ fn main() -> ! {
         esp_hal::Config::default().with_cpu_clock(/*CpuClock::max()*/ CpuClock::_80MHz);
     let peripherals = esp_hal::init(config);
 
-    esp_alloc::heap_allocator!(#[esp_hal::ram(reclaimed)] size: 66320);
-    // COEX needs more RAM - so we've added some more
-    esp_alloc::heap_allocator!(size: 64 * 1024);
+    //esp_alloc::heap_allocator!(#[esp_hal::ram(reclaimed)] size: 66320);
+    //esp_alloc::heap_allocator!(size: 64 * 1024);
 
     let timg0 = TimerGroup::new(peripherals.TIMG0);
 
@@ -79,6 +79,16 @@ fn main() -> ! {
         _wifi_controller.is_started().unwrap()
     );
     */
+
+    const HEAP_SIZE: usize = 32 * 1024;
+    static mut HEAP: MaybeUninit<[u8; HEAP_SIZE]> = MaybeUninit::uninit();
+    unsafe {
+        esp_alloc::HEAP.add_region(esp_alloc::HeapRegion::new(
+            HEAP.as_mut_ptr() as *mut u8,
+            HEAP_SIZE,
+            esp_alloc::MemoryCapability::Internal.into(),
+        ));
+    }
 
     // HAD2020 Protcal
     // command_type: u8, arg: u8
